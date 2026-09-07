@@ -1,0 +1,53 @@
+Revise:
+
+Why does byte b = 10 + 20; compile fine, but byte b = someInt + someInt; (with someInt a variable) does NOT compile, even if the runtime values would fit in a byte?
+What’s the actual difference between widening and narrowing conversion, and why does Java allow one implicitly but require you to force the other?
+
+Problems:
+
+1) Write code with a byte, a short, and an int all added together in one expression, assigned to a long.
+ Print the result. Then try assigning that same expression to an int without casting — does it compile? 
+Explain what type promotion rule is happening at each step of the expression evaluation, not just the final assignment.
+
+
+while adding compiler promotes byte and short to ints and integer addition takes place and as long is bigger than int ,
+compiler does widening and assigns value to long whereas assigning long to int without casting raises incompatible types error 
+by compiler because forcfully adding a bigger size value to a smaller one leads to data destruction.
+
+class Main{
+    public static void main(String[] args){
+        byte b=50;
+        short s=50;
+        int i=200;
+        long l=b+s+i;
+        System.out.println(l);
+        int x=(int)l;
+        System.out.println(x);
+    }
+}
+this gives error /tmp/xYIE5pQoKu/Main.java:8: error: incompatible types: possible lossy conversion from long to int.
+
+
+
+2) Write code that intentionally causes integer overflow (e.g., add 1 to Integer.MAX_VALUE) and also
+demonstrates a case where narrowing a double to an int silently loses data without any compiler warning. 
+Predict the output before running it, then run it and compare.
+
+class Main{
+    public static void main(String[] args){
+
+int i=Integer.MAX_VALUE+1;
+        System.out.println(i);
+
+        double d=5467.8709;
+        int x=(int)d;
+        System.out.println(x);
+
+    }
+}
+
+for any fixed-width integer system, max_value represents as all 1s with msb as 0(100-3 bit). 
+if we add 1 to this pattern , the carry ripples all through the magnitude bits , flipping them to 0 and forces the msb to flip to 1 (100-3 bit) 
+and in signed binary integer system msb as 1 indicates -ve number and evaluates to -4 which is absolute Min_value not to 0
+or any other number and this pattern reflects to all other bit sizes such as 32 bit integer system.
+
