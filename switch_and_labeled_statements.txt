@@ -1,0 +1,97 @@
+Day 3: Control Flow Deep Dive (switch expressions, labeled loops)
+
+Think first, don’t research yet:
+
+Traditional switch statements have a well-known bug class related to “fall-through.” What actually causes that, mechanically?
+Java added switch expressions (the -> arrow form) in more recent versions. What problem does that syntax actually solve, not just “it’s shorter”?
+
+Problems:
+
+1) Write a traditional switch statement (old-style, with case: ... break;) where you intentionally omit a break on one case,
+ and show the fall-through bug in action — print what happens. Then rewrite the same logic using a switch expression with arrow syntax, 
+and explain why the fall-through bug becomes structurally impossible in that form (not just “you forgot break” — what actually changed in the language semantics).
+
+import java.util.Scanner;
+class Main {
+    public static void main(String[] args) {
+        Scanner sc=new Scanner(System.in);
+        String day=sc.nextLine();
+        switch(day){
+            case "monday":
+            System.out.println("start of the week");
+
+            case "saturday":
+                System.out.println("weekend");
+                break;
+            default:
+                System.out.println("mid week grind");
+        }
+    }
+}
+as the break statement skipped for case monday ,consequently jvm execution slipped through the next lines resulting weekend  also printed in the output .
+
+import java.util.Scanner;
+class Main {
+    public static void main(String[] args) {
+        Scanner sc=new Scanner(System.in);
+        String day=sc.nextLine();
+        switch(day){
+            case "monday"->System.out.println("start of the week");
+
+            case "saturday"->System.out.println("weekend");
+
+            default->System.out.println("mid week grind");
+        }
+    }
+}
+In switch expression, because of -> operator everything immediate right to the operator is isolated which avoids the slipping of runtime execution to next cases
+
+
+2) Write a nested loop (loop inside a loop) where you use a labeled break and a labeled continue to control the outer loop from inside the inner loop. 
+Pick a real scenario (e.g., searching a 2D array for a value and stopping all loops immediately once found) — don’t just write a toy example with no purpose. 
+Explain why an unlabeled break wouldn’t have worked for your scenario.
+
+Labeled Break:
+
+import java.util.Scanner;
+class Main {
+    public static void main(String[] args) {
+      int[][] arr={{1,2,3},
+                   {4,5,6},
+                   {7,8,9}};
+        stopiterator:
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                if(i==2 && j==2){
+                    break stopiterator;
+                }
+                System.out.println("i ="+i+"and j= "+j);
+            }
+        }
+    }
+}
+in this problem labeled break is used to exit the deeply nested loop and the loop block is labeled with an identifier and 
+if the condition met we can totally exit from that whole block using labeled break. 
+whereas break is used to exit the inner loop and the outer executes normally which increases unwanted work.
+
+Labeled Continue:
+
+import java.util.Scanner;
+class Main {
+    public static void main(String[] args) {
+      int[][] arr={{1,2,3},
+                   {4,5,6},
+                   {7,8,9}};
+        stopiterator:
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                if(i==2 && j==2){
+                    continue stopiterator;
+                }
+                System.out.println("i ="+i+"and j= "+j);
+            }
+        }
+    }
+}
+in this case the inner loop is totally skipped and the outer loop skips one iteration whereas continue only skips inner loop iteration which satisfies the condition.
+
