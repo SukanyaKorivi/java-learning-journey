@@ -1,0 +1,57 @@
+When you create int[] arr = new int[5]; , where does the actual data live — stack or heap?
+ What does the reference variable arr actually hold?
+
+
+For a 2D array int[][] grid = new int[3][3]; 
+  — is this actually stored as one contiguous block of memory, or something else? (This is a common wrong assumption.)
+
+
+Problems:
+
+1) Write code that creates a jagged array (rows of different lengths) — e.g., row 0 has 2 elements, row 1 has 4, row 2 has 1. Print it out. 
+Then explain, based on what you now understand about how Java actually stores 2D arrays internally, why jagged arrays are even possible in Java 
+(hint: it’s connected to your answer about contiguous memory above).
+
+
+import java.util.Arrays;
+class Main {
+    public static void main(String[] args) {
+        int[][] arr=new int[3][];
+        arr[0]=new int[]{1,2};
+        arr[1]=new int[]{3,4,5,6};
+        arr[2]=new int[]{7};
+        System.out.println(Arrays.toString(arr[0]));
+        System.out.println(Arrays.toString(arr[1]));
+        System.out.println(Arrays.toString(arr[2]));
+    }
+}
+internally 2D arrays are stored as 1D array of 1D arrays meaning the reference variable to stored on stack pointing to the top of actual array object. 
+now in heap the array storage is divided into 2 layers such that layer 1 consists of fixed size (rows) 1D array 
+which again stores the references to the completely seperate independent arrays(column arrays) in which the actual int data is stored. 
+As the column arrays are stored as independent 1D arrays , java supports jagged arrays
+
+
+2) Write a method that takes an int[] array as a parameter and sorts it in place (you can use Arrays.sort() for this one — the point isn’t sorting logic, it’s reference behavior). 
+After calling this method from main(), print the array in main() and confirm it’s sorted there too — without returning anything from the method.
+Explain precisely why this works for arrays but would NOT work if you tried the same “modify in place, no return” pattern with a String parameter (tie this back to Day 1’s immutability concept).
+
+
+import java.util.Arrays; 
+public class ReferenceBehaviorDemo { 
+public static void main(String[] args) {
+int[] numbers = {5, 2, 9, 1, 3}; 
+System.out.println("Before sorting in main: " + Arrays.toString(numbers)); 
+sortInPlace(numbers); 
+System.out.println("After sorting in main: " + Arrays.toString(numbers)); } 
+public static void sortInPlace(int[] arr) { 
+Arrays.sort(arr); } 
+}
+
+
+the caller string does not change. first, arrays are mutable objects. 
+when a reference is passed to the local variable , it also points to the actual object containing original data nd if we perform modifications, 
+the actual data is prone to changes and main sees it and later when main calls that object , the changes are visible but strings are strictly immutable . 
+even though the original object reference is passed to the local variable when we try perform modifications , 
+it forces to create new object for the modified data and 
+the assignment operator assigns this new object's reference to the local varriable as the original data is never modified main cannot see it and 
+when the original object is called by main the unchanged data comes as output.
