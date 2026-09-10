@@ -1,0 +1,69 @@
+Day 5: Methods, Method Overloading, Varargs
+
+Think first, don’t research yet:
+
+Method overloading is resolved at compile time. What information does the compiler actually use to decide which overloaded method to call, if not the runtime values?
+
+
+
+Varargs (...) let you pass a variable number of arguments. What is a varargs parameter actually converted into under the hood?
+
+
+Problems:
+
+1)Write three overloaded methods: process(int x), process(long x), and process(double x). 
+Call process(5) (a plain int literal) and predict which one gets called before running it. 
+Then add a fourth overload process(Integer x) (boxed) and call process(5) again — does the resolution change? 
+Research/explain the overload resolution priority order Java actually follows (widening vs boxing vs varargs) — this is a classic interview trap.
+
+
+class Main {
+    public static void main(String[] args) {
+       Check check=new Check();
+        check.process(5);
+    }
+}
+class Check{
+    public void process(int x){
+        System.out.println("literal processing");
+    }
+    public void process(long x){
+        System.out.println("int to long  processing");
+    }
+    public void process(double x){
+        System.out.println("int to double processing processing");
+    }
+    public void process(Integer x){
+        System.out.println("Boxed processing");
+    }
+}
+when we call a method with literal , always the method with same type literal argument method runs and 
+the priority of overload resolution is literal->widening->boxing->varargs
+
+
+
+2)Write a method sum(int... nums) using varargs. 
+Call it with 0 arguments, 3 arguments, and by passing an actual int[] array directly. 
+Then try to write a second overload sum(int a, int... nums) and call sum(5) — 
+does Java pick the varargs-only version or the mixed version, and why? Explain what varargs actually compiles down to internally 
+(this connects directly to Day 4’s array knowledge).
+
+
+class Main {
+    public static void main(String[] args) {
+       Check check=new Check();
+        check.sum(5);
+    }
+}
+class Check{
+    public void sum(int... numbers){
+        System.out.println("varargs are picked by compiler");
+    }
+    public void sum(int a, int... numbers){
+        System.out.println("int and varargs are picked by compiler");
+    }
+}
+in this case Main.java:7: error: reference to sum is ambiguous is raised because both methods are valid match. 
+varargs can accept 0 or any number of parameters so method one is a valid match as it can input as array of size one and 
+second method is also valid because input literal is mapped to parameter one and varargs can accept 0 arguments. 
+both have same priority so ambiguity raises
