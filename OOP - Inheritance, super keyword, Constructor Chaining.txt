@@ -1,0 +1,94 @@
+Day 7: OOP — Inheritance, super keyword, Constructor Chaining
+
+Think first, don’t research yet:
+
+When a subclass constructor doesn’t explicitly call super(...), Java inserts an implicit call. What exactly does it insert, 
+and what breaks if the parent class doesn’t have a matching constructor?
+
+
+super can access a parent’s method even if the child overrides it. 
+What does that tell you about how overridden methods are actually stored/resolved — is the parent’s version gone, or still there?
+
+
+Problems:
+
+
+1)Create a class Animal with a constructor that takes a String name (no no-arg constructor). 
+Create a subclass Dog extends Animal and try to write Dog’s constructor without calling super(name) explicitly. 
+Observe the compiler error, then fix it. Explain precisely why Java couldn’t just silently call a default no-arg super() in this case.
+
+
+class Main {
+    public static void main(String[] args) {
+        Dog d=new Dog();
+    }
+}
+
+class Animal{
+    String name;
+    public Animal(String name){
+        this.name=name;
+        System.out.println(name+" is a dog");
+    }
+}
+class Dog extends Animal{
+    public Dog(){
+        super("Julie");
+        System.out.println("child construvtor");
+    }
+}
+
+if we try to construct child class constructor without super keyword then error: constructor Animal in class Animal cannot be applied to given types;
+    public Dog(){
+                ^
+  required: String
+  found:    no arguments
+  reason: actual and formal argument lists differ in length
+raises. Java actually inserts a no args super() in child class constructor 
+but when it tries to call the no args parent class constructor there is no constructor like that so this error raises
+
+
+2)Create Animal with a method makeSound() that prints "some generic sound". 
+Create Dog extends Animal that overrides makeSound() to print "bark", but inside the overridden method, also call super.makeSound() before printing “bark”. 
+Call makeSound() on a Dog object and observe both lines print. 
+Then explain: since Dog’s makeSound() “overrides” the parent’s, why is the parent’s version still callable at all —
+ where does it actually live, and is this related to how static methods work in Day 6, or fundamentally different?
+
+
+class Main {
+    public static void main(String[] args) {
+        Dog d=new Dog();
+        d.makeSound();
+    }
+}
+
+class Animal{
+    public void makeSound(){
+        System.out.println("some generic sound");
+    }
+}
+class Dog extends Animal{
+
+    @Override
+    public void makeSound(){
+        System.out.println("bark");
+        super.makeSound();
+    }
+}
+
+Static methods: they never had a vtable entry to begin with. 
+Static methods aren’t part of the instance method dispatch system at all — 
+they belong to the class itself, not to any object’s polymorphic behavior. There’s nothing to “skip” — 
+the vtable mechanism was never in play. This is why static “overriding” isn’t real overriding, 
+it’s hiding: call it through a reference, and Java picks the method based on the declared type of the reference variable, 
+completely ignoring the actual object’s runtime type.
+
+super.method(): the method absolutely does have a vtable entry 
+— it’s a normal instance method, fully polymorphic, fully part of the dynamic dispatch system for every other kind of call. 
+super doesn’t mean “this method has no vtable entry” — it means “for this one call site, compile a direct reference (invokespecial) instead of consulting the vtable.” 
+The vtable entry still exists and is still used by every other call to that method (e.g., a normal animalRef.makeSound() on a Dog object still goes through the vtable and gets Dog’s version).
+
+
+they share a surface similarity (both resolved at compile time, not runtime), but the reason is different in each case — 
+static methods are outside the dispatch system entirely, while super calls are inside the dispatch system but deliberately routed around it for that one call. 
+That’s “fundamentally different,” not “the same mechanism.
