@@ -1,0 +1,64 @@
+Day 6: OOP — Classes & Objects, Constructors, this keyword
+
+Think first, don’t research yet:
+
+When you don’t write any constructor at all, Java gives you a default one for free. What exactly does that default constructor do, 
+and at what point does Java stop giving it to you automatically?
+
+
+this can refer to the current object, but it can also be used to call another constructor in the same class. 
+What’s the actual rule for where that call must appear?
+
+
+Problems:
+
+
+1)Write a class with two constructors — one no-arg, one that takes parameters — where the no-arg constructor calls the parameterized one using this(...). 
+Then try to add a line of code before the this(...) call and observe the compiler’s reaction. Explain why that restriction exists.
+
+
+class Main {
+    public static void main(String[] args) {
+        CheckConstruct c=new CheckConstruct();
+    }
+}
+class CheckConstruct{
+    String name;
+    int age;
+    public CheckConstruct(String name,int age){
+        this.name=name;
+        this.age=age;
+        System.out.println(name+","+age);
+    }
+    public CheckConstruct(){
+        System.out.println("no args constructor");
+        this("sam",18);
+    }
+}
+when tried to add any line of code before this() then error: call to this must be first statement in constructor raised 
+beecause it is a strict rule that this() or super() must be the first statement in a constructor which is the reason to call parent constructor.
+
+
+2) Write a class Counter with an instance variable count and a static variable totalObjectsCreated. 
+In the constructor, increment both. Create 3 objects, then print count for each object individually and totalObjectsCreated once. 
+Explain precisely why count differs per object but totalObjectsCreated is shared — 
+tie this back to where static vs instance variables actually live in memory (connects to Day 4/heap knowledge).
+
+class Main {
+    public static void main(String[] args) {
+      Counter c=new Counter();
+        Counter d=new Counter();
+        Counter e=new Counter();
+    }
+
+}
+class Counter{
+    int count=0;
+    static int totalObjectsCreated=0;
+    public Counter(){
+        count++;
+        totalObjectsCreated++;
+        System.out.println(count+","+totalObjectsCreated);
+    }
+}
+static variables are stored in method area or metaspace tied to class not to the object so all the objects share one static variable
