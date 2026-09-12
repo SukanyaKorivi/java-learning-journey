@@ -1,0 +1,83 @@
+Day 8: OOP — Polymorphism (Compile-time vs Runtime)
+
+Think first, don’t research yet:
+
+You now know overloading is resolved at compile time and overriding at runtime. 
+Given that, what actually gets “checked” at compile time for an overridden method call — if the real method chosen happens at runtime, what does the compiler verify beforehand?
+
+If a parent reference holds a child object (Animal a = new Dog();),
+ and Dog has a method that Animal doesn’t declare at all, why can’t you call it through a, even though the actual object is a Dog?
+
+Problems:
+
+1)Create Animal with makeSound(), Dog extends Animal overriding it, and also add a brand new method fetch() only in Dog (not in Animal). 
+Write Animal a = new Dog(); and try calling a.fetch() — observe the compiler error. Then cast a to Dog (((Dog) a).fetch()) and show it works. 
+Explain precisely what the compiler checks against — the declared type or the runtime type — for method calls, 
+and why this differs from what happens at runtime for overridden methods.
+
+
+class Main {
+    public static void main(String[] args) {
+        Animal d=new Dog();
+         ((Dog)d).fetch();
+    }
+}
+
+class Animal{
+    public void makeSound(){
+        System.out.println("animal class");
+    }
+}
+class Dog extends Animal{
+    @Override
+    public void makeSound(){
+        System.out.println("Dog class");
+    }
+    public void fetch(){
+        System.out.println("fetch dog class");
+    }
+}
+
+compiler checks against reference type and and as the Animal class does not have fetch method , 
+it gives compile time error and at the time when we cast reference type to dog , 
+the compiler checks Dog class and finds the fetch method but for overriden methods compiler can't decide to which class the method belongs 
+so it is resolved at runtime
+
+
+2)Write a 3-level inheritance chain: Animal → Dog → Puppy, where all three override makeSound() differently. 
+Create Animal a = new Puppy(); and call a.makeSound(). Predict which version runs, then verify. 
+Now add super.makeSound() inside Puppy’s override — does it call Animal’s version or Dog’s version? 
+Explain why, tying it back to how super resolves (Day 7) — is it always “grandparent” or something else?
+
+
+class Main {
+    public static void main(String[] args) {
+        Animal d=new Puppy();
+         //((Dog)d).fetch();
+        d.makeSound();
+    }
+}
+
+class Animal{
+    public void makeSound(){
+        System.out.println("animal class");
+    }
+}
+class Dog extends Animal{
+    @Override
+    public void makeSound(){
+        System.out.println("Dog class");
+    }
+   // public void fetch(){
+     //   System.out.println("fetch dog class");
+    //}
+}
+class Puppy extends Dog{
+    @Override 
+    public void makeSound(){
+        System.out.println("Puppy class");
+        super.makeSound();
+    }
+}
+when we call a.makeSound() puppy class is called as the runtime object belongs to puppy class when we use super in puppy class , it calls the parent class Dog method.
+when compiler sees super keyword it bypass the runtime binding and calls the parent class method using invokespecial
